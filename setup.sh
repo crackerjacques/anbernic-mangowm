@@ -1,6 +1,6 @@
 #!/bin/bash
-# mango for Anbernic handhelds: pick the device, clone its branch of
-# mango-config next to this script and run that branch's setup
+# mango for Anbernic handhelds and the Raspberry Pi: pick the device, clone
+# its branch of mango-config next to this script and run that branch's setup
 
 set -eu
 
@@ -22,13 +22,14 @@ case "$model" in
 	*"RG DS"*) guess=1 ;;
 	*"Vita Pro"*) guess=2 ;;
 	*[Rr]otate*) guess=3 ;;
+	*"Raspberry Pi"*) guess=4 ;;
 	*) guess="" ;;
 esac
 
 cat <<EOF
 
-  mango for Anbernic handhelds
-  ============================
+  mango for Anbernic handhelds and the Raspberry Pi
+  =================================================
 
   This device: ${model:-unknown}
   System:      ${PRETTY_NAME:-unknown}
@@ -36,16 +37,21 @@ cat <<EOF
     1) RG DS
     2) RG Vita Pro
     3) RG Rotate
+    4) Raspberry Pi
 
 EOF
-read -r -p "Choose [1-3]${guess:+ ($guess)}: " n </dev/tty
+read -r -p "Choose [1-4]${guess:+ ($guess)}: " n </dev/tty
 case "${n:-$guess}" in
 	1) board=rg-ds ;;
 	2) board=rg-vita-pro ;;
 	3) board=rg-rotate ;;
+	4) board=rpi ;;
 	*) echo "aborted"; exit 0 ;;
 esac
-branch=anbernic-$board
+case "$board" in
+	rpi) branch=rpi ;;
+	*) branch=anbernic-$board ;;
+esac
 dest=$HERE/$board
 
 if [ -e "$dest/.git" ]; then
